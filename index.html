@@ -57,15 +57,19 @@
       tank_purple=loadImage("risk_img/tank_purple.png");
       tank_green=loadImage("risk_img/tank_green.png");
       tank_red=loadImage("risk_img/tank_red.png");
+      summary_menu=loadImage("risk_img/SummaryMenu.jpg");
     }
 
 
 
     function setup() {
-      createCanvas(1920, 1080);
-      states[0]= new State("red",2,200,200)
-      states[1]= new State("red",2,600,400)
-      states[2]= new State("red",2,900,300)
+      createCanvas(1909, 1080);
+      elio= new Player("elio",3,2,2,3,4)
+      bota= new Player("bota",2,2,2,3,4)
+      states[0]= new State(elio,2,200,200)
+      states[1]= new State(elio,2,600,400)
+      states[2]= new State(bota,2,900,300)
+      sum_menu= new SummaryMenu([elio,bota],1908-summary_menu.width ,0)
     }
 
     function draw() {
@@ -73,15 +77,33 @@
       for (let i=0; i<states.length; i++){
           states[i].show();
       }
+      sum_menu.show();
+
     }
 
 
-    class State{
-      constructor(colour,army,x,y){
+    class Player{
+      constructor(name, colour, states, supply, cards, obj){
+        this.name=name;
         this.colour=colour;
+        this.states=states;
+        this.supply=supply;
+        this.cards=cards;
+        this.obj=obj;
+      }
+      Colour(){
+        return this.colour;
+      }
+    }
+
+    class State{
+      constructor(owner,army,x,y,cont,borders){
+        this.owner=owner;
         this.army=army;
         this.x=x;
         this.y=y;
+        this.cont=cont;
+        this.borders=borders;
         this.brightness=0;
       }
       show () {
@@ -89,16 +111,45 @@
         strokeWeight(4);
         fill(this.brightness,99);
         circle(this.x,this.y,100);
-        image(tank_black, this.x-37,this.y-25,75,50);
+
+        //Showing the correct colour tank
+        let col;
+        col=this.owner.Colour();
+        if (col==0){
+            image(tank_black, this.x-37,this.y-25,75,50);
+          }else if(col==1){
+            image(tank_blue, this.x-37,this.y-25,75,50);
+          }else if (col==2) {
+            image(tank_purple, this.x-37,this.y-25,75,50);
+          }else if (col==3){
+            image(tank_red, this.x-37,this.y-25,75,50);
+          }else if (col==4) {
+            image(tank_green, this.x-37,this.y-25,75,50);
+          }else if (col==5) {
+            image(tank_yellow, this.x-37,this.y-25,75,50);
+          };
       }
       click (x,y) {
-        let d = dist(x, y, this.x, this.y)
+        let d = dist(x, y, this.x, this.y);
         if(d<100){
           this.brightness=300;
 
         }
       }
     }
+
+
+    class SummaryMenu{
+      constructor(players, x, y){
+        this.players=players;
+        this.x=x;
+        this.y=y;
+      }
+      show(){
+        image(summary_menu,this.x,this.y);
+      }
+    }
+
 
     function mousePressed(){
       for (let i=0; i<states.length; i++){
